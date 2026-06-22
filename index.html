@@ -6,6 +6,87 @@
         <meta name="description" content="AdoptaYA! - Plataforma web para la adopción responsable de animales">
         <meta name="keywords" content="adopción, animales, mascotas, donaciones, Ecuador">
         <title>AdoptaYA!</title>
+
+
+        
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background-color: #f4efe6;
+    font-family: Arial, sans-serif;
+}
+
+header{
+    background-color: #4f772d;
+    color: white;
+    text-align: center;
+    padding: 30px;
+}
+
+.navbar{
+    background-color: #6b705c !important;
+}
+
+section{
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card{
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-primary{
+    background-color: #a98467;
+    border-color: #a98467;
+}
+
+.btn-primary:hover{
+    background-color: #7f5539;
+    border-color: #7f5539;
+}
+
+img{
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+aside{
+    background-color: #dde5d0;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+footer{
+    background-color: #4f772d;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+@media(max-width:768px){
+
+h1{
+font-size:30px;
+}
+
+section{
+margin:10px;
+}
+
+}
+
+</style>
+
+
+
     </head>
     <body>
 
@@ -17,17 +98,49 @@
                 Plataforma web para la adopción responsable de animales y gestión de donaciones para su bienestar
             </p>
         </header>
+        
+        
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    AdoptaYA!
+                </a>
+                
+                <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menu">
+                
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav ms-auto">
+                    
+                    <li class="nav-item">
+                        
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#quienes-somos">Quiénes Somos</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#servicios">Servicios</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-        <nav>
-            <a href="#inicio">Inicio</a> |
-            <a href="#quienes-somos">Quiénes Somos</a> |
-            <a href="#servicios">Servicios</a> |
-            <a href="#contacto">Contacto</a>
-        </nav>
 
         <main>
 
-            <section id="inicio">
+            <section id="inicio" class="text-center">
                 <h2>
                     Bienvenido a AdoptaYA!
                 </h2>
@@ -36,13 +149,24 @@
                     con personas que quieren darles un hogar lleno de amor y cuidado. Creemos que cada animal
                     merece una segunda oportunidad, y estamos aquí para hacer posible ese encuentro.
                 </p>
-            </section>
+                
+                <a href="#contacto"
+                class="btn btn-primary mt-3">
+                Adopta Ahora
+            </a>
 
+            </section>
+            
             <section id="quienes-somos">
-                <h2>
+                
+                <h2 class="text-center mb-4">
                     Quiénes Somos
                 </h2>
                 <article>
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+
                     <p>
                         AdoptaYA! nació con el propósito de reducir el abandono animal en Ecuador mediante
                         una plataforma digital accesible, sencilla y eficiente. Somos un equipo comprometido
@@ -56,46 +180,147 @@
                         garantizar procesos de adopción responsables, seguros y transparentes, promoviendo
                         siempre el respeto y la dignidad de cada animal.
                     </p>
+                
+                </div>
+                
+                <div class="col-md-6 text-center">
+                    
                     <img
-                        src="https://www.eluniverso.com/resizer/v2/SHD2HE7MCZACHEURZ6USS4TGWM.jpg?auth=7248955c47e919ff0574ce5d5bc9645970c0594da850db2c5d95103051d3c13e&width=964&height=670&quality=75&smart=true"
-                        alt="Animal esperando ser adoptado"
-                        width="500"
-                    >
-                </article>
-            </section>
+                    src="https://www.eluniverso.com/resizer/v2/SHD2HE7MCZACHEURZ6USS4TGWM.jpg?auth=7248955c47e919ff0574ce5d5bc9645970c0594da850db2c5d95103051d3c13e&width=964&height=670&quality=75&smart=true"
+                    alt="Animal esperando ser adoptado"
+                    class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </article>
+</section>
 
             <section id="servicios">
                 <h2>
                     Servicios
                 </h2>
-                <ul>
-                    <li>Registro y búsqueda de animales en adopción</li>
-                    <li>Gestión de donaciones para refugios y animales</li>
-                    <li>Contacto directo con refugios y cuidadores</li>
-                    <li>Seguimiento post-adopción</li>
-                    <li>Publicación de campañas de rescate</li>
-                    <li>Red de voluntarios y aliados veterinarios</li>
-                </ul>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card p-3 m-3">
+                                <h4>Adopciones</h4>
+                                <p>
+                                    Registro y búsqueda de animales en adopción.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3 m-3">
+                                <h4>Donaciones</h4>
+                                <p>
+                                    Gestión de donaciones para refugios y animales.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card p-3 m-3">
+                                <h4>Veterinarias</h4>
+                                <p>
+                                    Red de voluntarios y aliados veterinarios.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
             </section>
-
+            
             <section>
                 <h2>
                     ¿Por qué adoptar?
                 </h2>
-                <iframe width="560" height="315"
-                src="https://www.youtube.com/embed/bHKFKB__E38"
+                <div class="ratio ratio-16x9">
+                    
+                    <iframe
+                    src="https://www.youtube.com/embed/bHKFKB__E38"
                     title="Video sobre adopción de animales"
-                allowfullscreen></iframe>
+                    allowfullscreen>
+                </iframe>
+            </div>
             </section>
 
             <section id="contacto">
                 <h2>
                     Contacto
                 </h2>
+                
+                <form>
+                    <div class="mb-3">
+                        
+                        <label>
+                            Nombre
+                        </label>
+                        <input type="text" class="form-control">
+                    
+                    </div>
+                    
+                    <div class="mb-3">
+                        
+                        <label>
+                            Correo electrónico
+                        </label>
+                        
+                        <input type="email" class="form-control">
+                    
+                    </div>
+                    
+                    <div class="mb-3">
+                        
+                        <label>
+                            Asunto
+                        </label>
+                        
+                        <input type="text" class="form-control">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>
+                            Mensaje
+                        </label>
+                        
+                        <textarea class="form-control"></textarea>
+                    
+                    </div>
+                    
+                    <button class="btn btn-primary">
+                        Enviar
+                    </button>
+                
+                </form>
                 <p>Correo electrónico: <a href="mailto:adoptaya@gmail.com">adoptaya@gmail.com</a></p>
+                <div class="mt-3">
+                    <a href="mailto:adoptaya@gmail.com"
+                    class="btn btn-primary m-1">
+                    Correo
+                </a>
+                
+                <a href="https://www.facebook.com"
+                target="_blank"
+                class="btn btn-primary m-1">
+                Facebook
+            </a>
+            
+            <a href="https://www.instagram.com"
+            target="_blank"
+            class="btn btn-primary m-1">
+            Instagram
+        </a>
+        <a href="https://maps.google.com"
+        target="_blank"
+        class="btn btn-primary m-1">
+        Ubicación
+    </a>
+</div>
                 <p>Teléfono: +593 99 123 4567</p>
                 <p>Dirección: Quito, Pichincha, Ecuador</p>
                 <p>Redes sociales:</p>
+                
                 <ul>
                     <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
                     <li><a href="https://www.instagram.com" target="_blank">Instagram</a></li>
@@ -124,6 +349,8 @@
                 Desarrollado por Lilian Quijije | Desarrollo de Aplicaciones Web | 2026
             </p>
         </footer>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     </body>
 </html>
