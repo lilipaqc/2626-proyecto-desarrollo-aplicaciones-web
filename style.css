@@ -1,0 +1,159 @@
+/* ESTILOS GENERALES */
+body {
+    background-color: #f4efe6;
+    font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+header {
+    background-color: #4f772d;
+    color: white;
+    text-align: center;
+    padding: 30px;
+}
+
+/* NAVBAR */
+.navbar {
+    background-color: #6b705c !important;
+}
+
+/* SECCIONES */
+section {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* CARDS DE SERVICIOS CON EFECTOS */
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+}
+
+.card:active {
+    background-color: #4f772d;
+    color: white;
+    transform: translateY(-4px);
+}
+
+.card:active h4,
+.card:active p {
+    color: white;
+}
+
+/* BOTONES */
+.btn-primary {
+    background-color: #a98467;
+    border-color: #a98467;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #7f5539;
+    border-color: #7f5539;
+    transform: scale(1.05);
+}
+
+/* IMÁGENES */
+img {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* ASIDE */
+aside {
+    background-color: #dde5d0;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+/* FOOTER */
+footer {
+    background-color: #4f772d;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+/* REDES SOCIALES EN CUADRADITOS */
+.redes-sociales {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.red-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 15px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.red-social:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    color: white;
+}
+
+.red-correo    { background-color: #a98467; }
+.red-facebook  { background-color: #1877f2; }
+.red-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.red-tiktok    { background-color: #010101; }
+.red-ubicacion { background-color: #4f772d; }
+
+/* SECCIÓN DINÁMICA */
+.registro-card {
+    border-left: 4px solid #4f772d;
+    transition: transform 0.2s ease;
+}
+
+.registro-card:hover {
+    transform: scale(1.01);
+}
+
+.badge-tipo {
+    background-color: #a98467;
+}
+
+#contador-registros {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #4f772d;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    section {
+        margin: 10px;
+    }
+
+    .red-social {
+        width: 80px;
+        height: 80px;
+        font-size: 12px;
+    }
+}
