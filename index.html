@@ -12,11 +12,13 @@
     </head>
     <body>
 
+        <!-- header, esto podria pasar a header.html mas adelante -->
         <header>
             <h1>AdoptaYA!</h1>
             <p>Plataforma web para la adopción responsable de animales y gestión de donaciones para su bienestar</p>
         </header>
 
+        <!-- barra de navegacion, tambien se podria separar en su propio archivo -->
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand" href="#">AdoptaYA!</a>
@@ -37,6 +39,9 @@
                             <a class="nav-link" href="#quienes-somos">Quiénes Somos</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#animales">Animales</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#servicios">Servicios</a>
                         </li>
                         <li class="nav-item">
@@ -50,6 +55,7 @@
             </div>
         </nav>
 
+        <!-- contenido principal, aqui va lo que cambia en cada pagina -->
         <main>
 
             <section id="inicio" class="text-center">
@@ -91,6 +97,15 @@
                         </div>
                     </div>
                 </article>
+            </section>
+
+            <!-- estos datos de animales vienen de un arreglo en script.js, no estan escritos a mano -->
+            <section id="animales">
+                <h2>Animales en Adopción</h2>
+                <p class="text-muted">Estos son los animales registrados actualmente en la plataforma, generados dinámicamente desde JavaScript.</p>
+
+                <div id="mensaje-animales" class="alert alert-warning d-none"></div>
+                <div id="lista-animales" class="row mt-3"></div>
             </section>
 
             <section id="servicios">
@@ -223,6 +238,7 @@
             <p>Feria de adopción gratuita: 20 de agosto de 2026 en el parque La Carolina sector norte de Quito.</p>
         </aside>
 
+        <!-- footer, se repite en todas las paginas -->
         <footer>
             <p>Desarrollado por Lilian Quijije | Desarrollo de Aplicaciones Web | 2026</p>
         </footer>

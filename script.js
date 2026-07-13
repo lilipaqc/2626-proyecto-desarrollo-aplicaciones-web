@@ -18,41 +18,41 @@ const feedbackNombre      = document.getElementById("feedback-nombre");
 const feedbackDescripcion = document.getElementById("feedback-descripcion");
 const feedbackTipo        = document.getElementById("feedback-tipo");
 
-// Expresión regular: solo letras (con tildes y ñ) y espacios
+// Expresión regular, solo letras (con tildes y ñ) y espacios
 const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
 
-// ===== FUNCIÓN: ACTUALIZAR CONTADOR =====
+// FUNCIÓN: ACTUALIZAR CONTADOR 
 function actualizarContador() {
     contadorEl.textContent = "Total de solicitudes registradas: " + totalRegistros;
 }
 
-// ===== FUNCIÓN: MOSTRAR MENSAJE DE VALIDACIÓN GENERAL =====
+// FUNCIÓN: MOSTRAR MENSAJE DE VALIDACIÓN GENERAL 
 function mostrarMensaje(texto, tipo) {
     mensajeValidacion.textContent = texto;
     mensajeValidacion.className   = "alert alert-" + tipo + " mt-3";
     mensajeValidacion.classList.remove("d-none");
 
-    // Ocultar el mensaje después de 3 segundos
+    // Oculta el mensaje después de 3 segundos
     setTimeout(function () {
         mensajeValidacion.classList.add("d-none");
     }, 3000);
 }
 
-// ===== FUNCIÓN: MARCAR CAMPO COMO VÁLIDO =====
+// FUNCIÓN: MARCAR CAMPO COMO VÁLIDO 
 function marcarValido(campo, feedback) {
     campo.classList.remove("is-invalid");
     campo.classList.add("is-valid");
     feedback.textContent = "";
 }
 
-// ===== FUNCIÓN: MARCAR CAMPO COMO INVÁLIDO =====
+// FUNCIÓN: MARCAR CAMPO COMO INVÁLIDO 
 function marcarInvalido(campo, feedback, mensaje) {
     campo.classList.remove("is-valid");
     campo.classList.add("is-invalid");
     feedback.textContent = mensaje;
 }
 
-// ===== FUNCIÓN: VALIDAR NOMBRE =====
+// FUNCIÓN: VALIDAR NOMBRE 
 function validarNombre() {
     const valor = inputNombre.value.trim();
 
@@ -75,7 +75,7 @@ function validarNombre() {
     return true;
 }
 
-// ===== FUNCIÓN: VALIDAR DESCRIPCIÓN =====
+// FUNCIÓN: VALIDAR DESCRIPCIÓN 
 function validarDescripcion() {
     const valor = inputDescripcion.value.trim();
 
@@ -93,7 +93,7 @@ function validarDescripcion() {
     return true;
 }
 
-// ===== FUNCIÓN: VALIDAR TIPO =====
+// FUNCIÓN: VALIDAR TIPO 
 function validarTipo() {
     const valor = inputTipo.value;
 
@@ -106,7 +106,7 @@ function validarTipo() {
     return true;
 }
 
-// ===== FUNCIÓN: CREAR TARJETA DE REGISTRO =====
+// FUNCIÓN: CREAR TARJETA DE REGISTRO 
 function crearTarjetaRegistro(nombre, descripcion, tipo) {
     // Crear elementos
     const col      = document.createElement("div");
@@ -151,7 +151,7 @@ function crearTarjetaRegistro(nombre, descripcion, tipo) {
     return col;
 }
 
-// ===== EVENTO: FILTRAR CARACTERES NO PERMITIDOS EN NOMBRE =====
+// EVENTO: FILTRAR CARACTERES NO PERMITIDOS EN NOMBRE 
 inputNombre.addEventListener("input", function () {
     // Elimina cualquier caracter que no sea letra o espacio mientras se escribe
     inputNombre.value = inputNombre.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
@@ -159,15 +159,15 @@ inputNombre.addEventListener("input", function () {
 });
 inputNombre.addEventListener("blur", validarNombre);
 
-// ===== EVENTO: VALIDACIÓN EN TIEMPO REAL DE DESCRIPCIÓN =====
+// EVENTO: VALIDACIÓN EN TIEMPO REAL DE DESCRIPCIÓN 
 inputDescripcion.addEventListener("input", validarDescripcion);
 inputDescripcion.addEventListener("blur", validarDescripcion);
 
-// ===== EVENTO: VALIDACIÓN EN TIEMPO REAL DE TIPO =====
+// EVENTO: VALIDACIÓN EN TIEMPO REAL DE TIPO
 inputTipo.addEventListener("change", validarTipo);
 inputTipo.addEventListener("blur", validarTipo);
 
-// ===== EVENTO: SUBMIT DEL FORMULARIO =====
+// EVENTO: SUBMIT DEL FORMULARIO
 formularioRegistro.addEventListener("submit", function (event) {
     // Evitar recarga de página
     event.preventDefault();
@@ -205,3 +205,78 @@ formularioRegistro.addEventListener("submit", function (event) {
         campo.classList.remove("is-valid", "is-invalid");
     });
 });
+
+
+// SECCIÓN: ANIMALES EN ADOPCIÓN (contenido dinámico desde un arreglo)
+
+// Arreglo de objetos que representa los datos del proyecto
+const animalesDisponibles = [
+    { nombre: "Rocky", tipo: "Perro", edad: "2 años", estado: "Disponible" },
+    { nombre: "Michi", tipo: "Gato", edad: "1 año", estado: "Disponible" },
+    { nombre: "Toby", tipo: "Perro", edad: "4 años", estado: "Adoptado" },
+    { nombre: "Luna", tipo: "Conejo", edad: "8 meses", estado: "Disponible" },
+    { nombre: "Simba", tipo: "Gato", edad: "3 años", estado: "Adoptado" }
+];
+
+// REFERENCIAS AL DOM DE LA SECCIÓN ANIMALES
+const listaAnimales    = document.getElementById("lista-animales");
+const mensajeAnimales  = document.getElementById("mensaje-animales");
+
+// ===== FUNCIÓN: CREAR TARJETA DE ANIMAL =====
+function crearTarjetaAnimal(animal) {
+    const col      = document.createElement("div");
+    const card     = document.createElement("div");
+    const cardBody = document.createElement("div");
+    const titulo   = document.createElement("h5");
+    const badge    = document.createElement("span");
+    const infoEdad = document.createElement("p");
+
+    col.className      = "col-md-6 col-lg-4 mb-3";
+    card.className     = "card animal-card p-2";
+    cardBody.className = "card-body";
+    titulo.className   = "card-title";
+    infoEdad.className = "card-text text-muted";
+
+    // Condición: el color del badge depende del estado del animal
+    if (animal.estado === "Disponible") {
+        badge.className = "badge bg-success mb-2";
+    } else {
+        badge.className = "badge bg-secondary mb-2";
+    }
+
+    titulo.textContent   = animal.nombre + " (" + animal.tipo + ")";
+    badge.textContent    = animal.estado;
+    infoEdad.textContent = "Edad: " + animal.edad;
+
+    cardBody.appendChild(badge);
+    cardBody.appendChild(titulo);
+    cardBody.appendChild(infoEdad);
+    card.appendChild(cardBody);
+    col.appendChild(card);
+
+    return col;
+}
+
+// FUNCIÓN: RENDERIZAR LISTA DE ANIMALES
+function renderizarAnimales(animales) {
+    // Limpiar contenido previo antes de renderizar
+    listaAnimales.innerHTML = "";
+
+    // Condición: si no hay animales registrados, mostrar mensaje en vez de tarjetas
+    if (animales.length === 0) {
+        mensajeAnimales.textContent = "No hay animales disponibles en este momento.";
+        mensajeAnimales.classList.remove("d-none");
+        return;
+    }
+
+    mensajeAnimales.classList.add("d-none");
+
+    // Estructura repetitiva: recorre el arreglo y genera una tarjeta por cada animal
+    animales.forEach(function (animal) {
+        const tarjeta = crearTarjetaAnimal(animal);
+        listaAnimales.appendChild(tarjeta);
+    });
+}
+
+// Renderizar la lista de animales al cargar la página
+renderizarAnimales(animalesDisponibles);
