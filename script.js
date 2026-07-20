@@ -221,6 +221,24 @@ const animalesDisponibles = [
 // REFERENCIAS AL DOM DE LA SECCIÓN ANIMALES
 const listaAnimales    = document.getElementById("lista-animales");
 const mensajeAnimales  = document.getElementById("mensaje-animales");
+const spinnerAnimales  = document.getElementById("spinner-animales");
+
+// REFERENCIAS AL DOM DEL MODAL DE DETALLES
+const modalAnimalBody = document.getElementById("modalAnimalBody");
+const modalAnimalEl   = document.getElementById("modalAnimal");
+const modalAnimal      = new bootstrap.Modal(modalAnimalEl);
+
+// FUNCIÓN: MOSTRAR DETALLE DE UN ANIMAL EN EL MODAL 
+function mostrarDetalleAnimal(animal) {
+    // Genera el contenido del modal según el animal seleccionado
+    modalAnimalBody.innerHTML =
+        "<p><strong>Nombre:</strong> " + animal.nombre + "</p>" +
+        "<p><strong>Tipo:</strong> " + animal.tipo + "</p>" +
+        "<p><strong>Edad:</strong> " + animal.edad + "</p>" +
+        "<p><strong>Estado:</strong> " + animal.estado + "</p>";
+
+    modalAnimal.show();
+}
 
 // ===== FUNCIÓN: CREAR TARJETA DE ANIMAL =====
 function crearTarjetaAnimal(animal) {
@@ -230,14 +248,16 @@ function crearTarjetaAnimal(animal) {
     const titulo   = document.createElement("h5");
     const badge    = document.createElement("span");
     const infoEdad = document.createElement("p");
+    const btnDetalle = document.createElement("button");
 
     col.className      = "col-md-6 col-lg-4 mb-3";
     card.className     = "card animal-card p-2";
     cardBody.className = "card-body";
     titulo.className   = "card-title";
     infoEdad.className = "card-text text-muted";
+    btnDetalle.className = "btn btn-primary btn-sm mt-2";
 
-    // Condición: el color del badge depende del estado del animal
+    // Condición, el color del badge depende del estado del animal
     if (animal.estado === "Disponible") {
         badge.className = "badge bg-success mb-2";
     } else {
@@ -247,22 +267,29 @@ function crearTarjetaAnimal(animal) {
     titulo.textContent   = animal.nombre + " (" + animal.tipo + ")";
     badge.textContent    = animal.estado;
     infoEdad.textContent = "Edad: " + animal.edad;
+    btnDetalle.textContent = "Ver detalles";
+
+    // Evento de abrir el modal con la información del animal
+    btnDetalle.addEventListener("click", function () {
+        mostrarDetalleAnimal(animal);
+    });
 
     cardBody.appendChild(badge);
     cardBody.appendChild(titulo);
     cardBody.appendChild(infoEdad);
+    cardBody.appendChild(btnDetalle);
     card.appendChild(cardBody);
     col.appendChild(card);
 
     return col;
 }
 
-// FUNCIÓN: RENDERIZAR LISTA DE ANIMALES
+// FUNCIÓN DE RENDERIZAR LISTA DE ANIMALES
 function renderizarAnimales(animales) {
     // Limpiar contenido previo antes de renderizar
     listaAnimales.innerHTML = "";
 
-    // Condición: si no hay animales registrados, mostrar mensaje en vez de tarjetas
+    // Condición, si no hay animales registrados, mostrar mensaje en vez de tarjetas
     if (animales.length === 0) {
         mensajeAnimales.textContent = "No hay animales disponibles en este momento.";
         mensajeAnimales.classList.remove("d-none");
@@ -271,12 +298,26 @@ function renderizarAnimales(animales) {
 
     mensajeAnimales.classList.add("d-none");
 
-    // Estructura repetitiva: recorre el arreglo y genera una tarjeta por cada animal
+    // Estructura repetitiva, recorre el arreglo y genera una tarjeta por cada animal
     animales.forEach(function (animal) {
         const tarjeta = crearTarjetaAnimal(animal);
         listaAnimales.appendChild(tarjeta);
     });
 }
 
-// Renderizar la lista de animales al cargar la página
-renderizarAnimales(animalesDisponibles);
+// FUNCION DE CARGAR ANIMALES SIMULANDO UN PROCESO DE CARGA (spinner) 
+function cargarAnimales(animales) {
+    // Muestra el spinner mientras se "cargan" los datos
+    spinnerAnimales.classList.remove("d-none");
+    listaAnimales.classList.add("d-none");
+
+    // Simula un proceso de carga de 1.2 segundos antes de renderizar los datos
+    setTimeout(function () {
+        renderizarAnimales(animales);
+        spinnerAnimales.classList.add("d-none");
+        listaAnimales.classList.remove("d-none");
+    }, 1200);
+}
+
+// Cargar y renderizar la lista de animales al cargar la página
+cargarAnimales(animalesDisponibles);

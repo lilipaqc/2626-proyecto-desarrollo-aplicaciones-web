@@ -42,6 +42,9 @@ Se mejoraron las validaciones del formulario de solicitudes en tiempo real: nomb
 **Semana 7 - Uso de plantillas para contenido dinámico**
 Se reorganizó el proyecto simulando una estructura de plantillas, marcando con comentarios las secciones que a futuro podrían separarse en archivos de Flask (header, nav, contenido principal, footer). Se agregó la sección "Animales en Adopción", cuyos datos se generan desde un arreglo de objetos en JavaScript y se renderizan dinámicamente con un bucle, incluyendo un mensaje condicional si no hay animales disponibles.
 
+**Semana 8 - Mejora de interfaces con Bootstrap**
+Se reforzó la interfaz visual del proyecto manteniendo intacta la lógica y las validaciones ya desarrolladas. Se agregó un modal de Bootstrap en la sección "Animales en Adopción" que muestra los detalles de cada animal (nombre, tipo, edad y estado) al presionar el botón "Ver detalles" de su tarjeta. Se incorporó también un spinner de Bootstrap que simula un proceso de carga de datos antes de renderizar la lista de animales. Se conservaron el navbar, el sistema de rejilla, el formulario con `form-label`/`form-control`, los botones y las alertas ya implementados en semanas anteriores, comprobando que la interfaz siga siendo responsiva en computadora, tablet y celular.
+
 ## Autor
 
 Lilian Quijije - Desarrollo de Aplicaciones Web - 2026
