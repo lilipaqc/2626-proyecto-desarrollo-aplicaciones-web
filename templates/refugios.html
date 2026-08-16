@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block titulo %}Refugios{% endblock %}
+
+{% block content %}
+
+    <section id="modulo-refugios">
+        <h2>Refugios Aliados</h2>
+        <p class="text-muted">Refugios que trabajan en conjunto con AdoptaYA! para dar en adopción a sus animales.</p>
+
+        <div class="row mt-3">
+            {% for refugio in refugios %}
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3">
+                        <h4>{{ refugio.nombre }}</h4>
+                        <p class="text-muted mb-1">Ciudad: {{ refugio.ciudad }}</p>
+                        <p class="mb-0">Contacto: {{ refugio.contacto }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock %}

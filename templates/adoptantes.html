@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block titulo %}Adoptantes{% endblock %}
+
+{% block content %}
+
+    <section id="modulo-adoptantes">
+        <h2>Adoptantes Registrados</h2>
+        <p class="text-muted">Personas interesadas en adoptar una mascota a través de la plataforma.</p>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th>Teléfono</th>
+                        <th>Mascota de interés</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for adoptante in adoptantes %}
+                        <tr>
+                            <td>{{ adoptante.nombre }}</td>
+                            <td>{{ adoptante.cedula }}</td>
+                            <td>{{ adoptante.telefono }}</td>
+                            <td>{{ adoptante.mascota_interes }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+{% endblock %}

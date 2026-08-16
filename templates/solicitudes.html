@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block titulo %}Solicitudes{% endblock %}
+
+{% block content %}
+
+    <section id="modulo-solicitudes">
+        <h2>Panel de Solicitudes</h2>
+        <p class="text-muted">Estado de las solicitudes de adopción procesadas por el equipo de AdoptaYA!.</p>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Solicitante</th>
+                        <th>Mascota</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes %}
+                        <tr>
+                            <td>{{ solicitud.solicitante }}</td>
+                            <td>{{ solicitud.mascota }}</td>
+                            <td>{{ solicitud.fecha }}</td>
+                            <td>
+                                {% if solicitud.estado == "Aprobada" %}
+                                    <span class="badge bg-success">{{ solicitud.estado }}</span>
+                                {% elif solicitud.estado == "En revisión" %}
+                                    <span class="badge bg-warning text-dark">{{ solicitud.estado }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ solicitud.estado }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+{% endblock %}
