@@ -18,56 +18,19 @@
             <p>Plataforma web para la adopción responsable de animales y gestión de donaciones para su bienestar</p>
         </header>
 
-        <!-- barra de navegacion -->
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url_for('index') }}">AdoptaYA!</a>
-
-                <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#menu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="menu">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('mascotas_view') }}">Mascotas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('adoptantes_view') }}">Adoptantes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('refugios_view') }}">Refugios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('solicitudes_view') }}">Solicitudes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('index') }}#contacto">Contacto</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        <!-- barra de navegación, componente reutilizable -->
+        {% include "components/navbar.html" %}
 
         <!-- contenido principal, cambia segun la pagina que herede de base.html -->
         <main>
             {% block content %}{% endblock %}
         </main>
 
-        <!-- footer -->
-        <footer>
-            <p>Desarrollado por Lilian Quijije | Desarrollo de Aplicaciones Web | 2026</p>
-        </footer>
+        <!-- footer, componente reutilizable -->
+        {% include "components/footer.html" %}
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- bloque para scripts propios de cada pagina, no todas las paginas necesitan script.js -->
         {% block scripts %}{% endblock %}
-
     </body>
 </html>

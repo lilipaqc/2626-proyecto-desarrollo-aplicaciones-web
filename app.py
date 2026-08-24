@@ -5,7 +5,6 @@ app = Flask(__name__)
 # ---------------------------------------------------------
 # Datos de ejemplo (estáticos), todavía no hay base de datos
 # ---------------------------------------------------------
-
 mascotas = [
     {"nombre": "Rocky", "tipo": "Perro", "edad": "2 años", "estado": "Disponible"},
     {"nombre": "Michi", "tipo": "Gato", "edad": "1 año", "estado": "Disponible"},
@@ -32,36 +31,36 @@ solicitudes = [
     {"solicitante": "Andrea Torres", "mascota": "Michi", "fecha": "2026-08-14", "estado": "Pendiente"},
 ]
 
-
 # ---------------------------------------------------------
 # Rutas
 # ---------------------------------------------------------
-
 @app.route('/')
 def index():
-    return render_template('index.html')
-
+    fecha_actualizacion = "23 de agosto de 2026"
+    total_mascotas = len(mascotas)
+    return render_template(
+        'index.html',
+        fecha_actualizacion=fecha_actualizacion,
+        total_mascotas=total_mascotas
+    )
 
 @app.route('/mascotas')
 def mascotas_view():
     return render_template('mascotas.html', mascotas=mascotas)
 
-
 @app.route('/adoptantes')
 def adoptantes_view():
     return render_template('adoptantes.html', adoptantes=adoptantes)
-
 
 @app.route('/refugios')
 def refugios_view():
     return render_template('refugios.html', refugios=refugios)
 
-
 @app.route('/solicitudes')
 def solicitudes_view():
     return render_template('solicitudes.html', solicitudes=solicitudes)
 
-
 if __name__ == '__main__':
     app.run(debug=True)
+    
     
