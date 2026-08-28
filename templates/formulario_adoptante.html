@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registrar Adoptante{% endblock %}
+
+{% block content %}
+    <section id="formulario-adoptante">
+        <h2>Registrar Adoptante</h2>
+        <p class="text-muted">Completa el formulario para registrar una nueva persona interesada en adoptar.</p>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.nombre.label(class="form-label") }}
+                {{ form.nombre(class="form-control") }}
+                {% for error in form.nombre.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.cedula.label(class="form-label") }}
+                {{ form.cedula(class="form-control") }}
+                {% for error in form.cedula.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.telefono.label(class="form-label") }}
+                {{ form.telefono(class="form-control") }}
+                {% for error in form.telefono.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.mascota_interes.label(class="form-label") }}
+                {{ form.mascota_interes(class="form-control") }}
+                {% for error in form.mascota_interes.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {{ form.enviar(class="btn btn-primary") }}
+        </form>
+    </section>
+{% endblock %}

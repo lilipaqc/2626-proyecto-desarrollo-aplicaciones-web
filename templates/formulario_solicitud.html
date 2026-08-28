@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registrar Solicitud{% endblock %}
+
+{% block content %}
+    <section id="formulario-solicitud">
+        <h2>Registrar Solicitud de Adopción</h2>
+        <p class="text-muted">Completa el formulario para registrar una nueva solicitud.</p>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.solicitante.label(class="form-label") }}
+                {{ form.solicitante(class="form-control") }}
+                {% for error in form.solicitante.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.mascota.label(class="form-label") }}
+                {{ form.mascota(class="form-control") }}
+                {% for error in form.mascota.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.fecha.label(class="form-label") }}
+                {{ form.fecha(class="form-control", placeholder="2026-08-25") }}
+                {% for error in form.fecha.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.estado.label(class="form-label") }}
+                {{ form.estado(class="form-select") }}
+                {% for error in form.estado.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {{ form.enviar(class="btn btn-primary") }}
+        </form>
+    </section>
+{% endblock %}

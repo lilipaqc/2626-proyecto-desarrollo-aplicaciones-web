@@ -1,6 +1,12 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
+
+from forms.mascota_form import MascotaForm
+from forms.adoptante_form import AdoptanteForm
+from forms.refugio_form import RefugioForm
+from forms.solicitud_form import SolicitudForm
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'  # necesaria para CSRF
 
 # ---------------------------------------------------------
 # Datos de ejemplo (estáticos), todavía no hay base de datos
@@ -32,7 +38,7 @@ solicitudes = [
 ]
 
 # ---------------------------------------------------------
-# Rutas
+# Rutas (Semana 9-10)
 # ---------------------------------------------------------
 @app.route('/')
 def index():
@@ -59,6 +65,60 @@ def refugios_view():
 @app.route('/solicitudes')
 def solicitudes_view():
     return render_template('solicitudes.html', solicitudes=solicitudes)
+
+# ---------------------------------------------------------
+# Rutas de formularios (Semana 11)
+# ---------------------------------------------------------
+@app.route('/mascotas/agregar', methods=['GET', 'POST'])
+def agregar_mascota():
+    form = MascotaForm()
+    if form.validate_on_submit():
+        mascotas.append({
+            "nombre": form.nombre.data,
+            "tipo": form.tipo.data,
+            "edad": form.edad.data,
+            "estado": form.estado.data
+        })
+        return redirect(url_for('mascotas_view'))
+    return render_template('formulario_mascota.html', form=form)
+
+@app.route('/adoptantes/agregar', methods=['GET', 'POST'])
+def agregar_adoptante():
+    form = AdoptanteForm()
+    if form.validate_on_submit():
+        adoptantes.append({
+            "nombre": form.nombre.data,
+            "cedula": form.cedula.data,
+            "telefono": form.telefono.data,
+            "mascota_interes": form.mascota_interes.data
+        })
+        return redirect(url_for('adoptantes_view'))
+    return render_template('formulario_adoptante.html', form=form)
+
+@app.route('/refugios/agregar', methods=['GET', 'POST'])
+def agregar_refugio():
+    form = RefugioForm()
+    if form.validate_on_submit():
+        refugios.append({
+            "nombre": form.nombre.data,
+            "ciudad": form.ciudad.data,
+            "contacto": form.contacto.data
+        })
+        return redirect(url_for('refugios_view'))
+    return render_template('formulario_refugio.html', form=form)
+
+@app.route('/solicitudes/agregar', methods=['GET', 'POST'])
+def agregar_solicitud():
+    form = SolicitudForm()
+    if form.validate_on_submit():
+        solicitudes.append({
+            "solicitante": form.solicitante.data,
+            "mascota": form.mascota.data,
+            "fecha": form.fecha.data,
+            "estado": form.estado.data
+        })
+        return redirect(url_for('solicitudes_view'))
+    return render_template('formulario_solicitud.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)

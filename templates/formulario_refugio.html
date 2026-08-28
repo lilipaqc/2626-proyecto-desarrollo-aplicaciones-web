@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registrar Refugio{% endblock %}
+
+{% block content %}
+    <section id="formulario-refugio">
+        <h2>Registrar Refugio</h2>
+        <p class="text-muted">Completa el formulario para agregar un nuevo refugio aliado.</p>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.nombre.label(class="form-label") }}
+                {{ form.nombre(class="form-control") }}
+                {% for error in form.nombre.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.ciudad.label(class="form-label") }}
+                {{ form.ciudad(class="form-control") }}
+                {% for error in form.ciudad.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.contacto.label(class="form-label") }}
+                {{ form.contacto(class="form-control") }}
+                {% for error in form.contacto.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {{ form.enviar(class="btn btn-primary") }}
+        </form>
+    </section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registrar Mascota{% endblock %}
+
+{% block content %}
+    <section id="formulario-mascota">
+        <h2>Registrar Mascota</h2>
+        <p class="text-muted">Completa el formulario para agregar una nueva mascota al listado.</p>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.nombre.label(class="form-label") }}
+                {{ form.nombre(class="form-control") }}
+                {% for error in form.nombre.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.tipo.label(class="form-label") }}
+                {{ form.tipo(class="form-select") }}
+                {% for error in form.tipo.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.edad.label(class="form-label") }}
+                {{ form.edad(class="form-control") }}
+                {% for error in form.edad.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.estado.label(class="form-label") }}
+                {{ form.estado(class="form-select") }}
+                {% for error in form.estado.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {{ form.enviar(class="btn btn-primary") }}
+        </form>
+    </section>
+{% endblock %}

@@ -7,6 +7,7 @@
     <section id="modulo-refugios">
         <h2>Refugios Aliados</h2>
         <p class="text-muted">Refugios que trabajan en conjunto con AdoptaYA! para dar en adopción a sus animales.</p>
+        <a href="{{ url_for('agregar_refugio') }}" class="btn btn-primary mb-3">+ Agregar Refugio</a>
 
         <div class="row mt-3">
             {% for refugio in refugios %}
