@@ -5,20 +5,18 @@ from forms.adoptante_form import AdoptanteForm
 from forms.refugio_form import RefugioForm
 from forms.solicitud_form import SolicitudForm
 
+from database import conectar, inicializar_db
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'  # necesaria para CSRF
 
-# ---------------------------------------------------------
-# Datos de ejemplo (estáticos), todavía no hay base de datos
-# ---------------------------------------------------------
-mascotas = [
-    {"nombre": "Rocky", "tipo": "Perro", "edad": "2 años", "estado": "Disponible"},
-    {"nombre": "Michi", "tipo": "Gato", "edad": "1 año", "estado": "Disponible"},
-    {"nombre": "Toby", "tipo": "Perro", "edad": "4 años", "estado": "Adoptado"},
-    {"nombre": "Luna", "tipo": "Conejo", "edad": "8 meses", "estado": "Disponible"},
-    {"nombre": "Simba", "tipo": "Gato", "edad": "3 años", "estado": "Adoptado"},
-]
+# Inicializa la base de datos (crea la tabla si no existe)
+inicializar_db()
 
+# ---------------------------------------------------------
+# Datos de ejemplo (estáticos) para los módulos que aún no
+# tienen persistencia en base de datos
+# ---------------------------------------------------------
 adoptantes = [
     {"nombre": "María López", "cedula": "1712345678", "telefono": "0991234567", "mascota_interes": "Rocky"},
     {"nombre": "Carlos Pérez", "cedula": "1798765432", "telefono": "0987654321", "mascota_interes": "Luna"},
@@ -38,12 +36,16 @@ solicitudes = [
 ]
 
 # ---------------------------------------------------------
-# Rutas (Semana 9-10)
+# Rutas principales
 # ---------------------------------------------------------
 @app.route('/')
 def index():
-    fecha_actualizacion = "23 de agosto de 2026"
-    total_mascotas = len(mascotas)
+    fecha_actualizacion = "06 de septiembre de 2026"
+
+    conn = conectar()
+    total_mascotas = conn.execute('SELECT COUNT(*) FROM mascotas').fetchone()[0]
+    conn.close()
+
     return render_template(
         'index.html',
         fecha_actualizacion=fecha_actualizacion,
@@ -52,6 +54,9 @@ def index():
 
 @app.route('/mascotas')
 def mascotas_view():
+    conn = conectar()
+    mascotas = conn.execute('SELECT * FROM mascotas').fetchall()
+    conn.close()
     return render_template('mascotas.html', mascotas=mascotas)
 
 @app.route('/adoptantes')
@@ -67,18 +72,19 @@ def solicitudes_view():
     return render_template('solicitudes.html', solicitudes=solicitudes)
 
 # ---------------------------------------------------------
-# Rutas de formularios (Semana 11)
+# Rutas de formularios
 # ---------------------------------------------------------
 @app.route('/mascotas/agregar', methods=['GET', 'POST'])
 def agregar_mascota():
     form = MascotaForm()
     if form.validate_on_submit():
-        mascotas.append({
-            "nombre": form.nombre.data,
-            "tipo": form.tipo.data,
-            "edad": form.edad.data,
-            "estado": form.estado.data
-        })
+        conn = conectar()
+        conn.execute(
+            'INSERT INTO mascotas (nombre, tipo, edad, estado) VALUES (?, ?, ?, ?)',
+            (form.nombre.data, form.tipo.data, form.edad.data, form.estado.data)
+        )
+        conn.commit()
+        conn.close()
         return redirect(url_for('mascotas_view'))
     return render_template('formulario_mascota.html', form=form)
 
