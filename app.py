@@ -5,17 +5,14 @@ from forms.adoptante_form import AdoptanteForm
 from forms.refugio_form import RefugioForm
 from forms.solicitud_form import SolicitudForm
 
-from database import conectar, inicializar_db
+from conexion.conexion import get_db_connection
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'  # necesaria para CSRF
 
-# Inicializa la base de datos (crea la tabla si no existe)
-inicializar_db()
-
 # ---------------------------------------------------------
 # Datos de ejemplo (estáticos) para los módulos que aún no
-# tienen persistencia en base de datos
+# tienen persistencia en base de datos relacional
 # ---------------------------------------------------------
 adoptantes = [
     {"nombre": "María López", "cedula": "1712345678", "telefono": "0991234567", "mascota_interes": "Rocky"},
@@ -23,7 +20,7 @@ adoptantes = [
     {"nombre": "Andrea Torres", "cedula": "1755566677", "telefono": "0965544332", "mascota_interes": "Michi"},
 ]
 
-refugios = [
+refugios_lista = [
     {"nombre": "Refugio Huellitas", "ciudad": "Quito", "contacto": "huellitas@correo.com"},
     {"nombre": "Patitas Felices", "ciudad": "Ambato", "contacto": "patitasfelices@correo.com"},
     {"nombre": "Segunda Oportunidad", "ciudad": "Quito", "contacto": "segundaoportunidad@correo.com"},
@@ -35,15 +32,30 @@ solicitudes = [
     {"solicitante": "Andrea Torres", "mascota": "Michi", "fecha": "2026-08-14", "estado": "Pendiente"},
 ]
 
+
+def obtener_refugios_choices():
+    """Consulta los refugios en MySQL para llenar el SelectField del formulario."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_refugio, nombre FROM refugios")
+    resultado = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return [(r[0], r[1]) for r in resultado]
+
+
 # ---------------------------------------------------------
 # Rutas principales
 # ---------------------------------------------------------
 @app.route('/')
 def index():
-    fecha_actualizacion = "06 de septiembre de 2026"
+    fecha_actualizacion = "13 de septiembre de 2026"
 
-    conn = conectar()
-    total_mascotas = conn.execute('SELECT COUNT(*) FROM mascotas').fetchone()[0]
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM mascotas")
+    total_mascotas = cursor.fetchone()[0]
+    cursor.close()
     conn.close()
 
     return render_template(
@@ -54,8 +66,16 @@ def index():
 
 @app.route('/mascotas')
 def mascotas_view():
-    conn = conectar()
-    mascotas = conn.execute('SELECT * FROM mascotas').fetchall()
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('''
+        SELECT m.id_mascota, m.nombre, m.tipo, m.edad, m.estado,
+               r.nombre AS refugio_nombre
+        FROM mascotas m
+        LEFT JOIN refugios r ON m.id_refugio = r.id_refugio
+    ''')
+    mascotas = cursor.fetchall()
+    cursor.close()
     conn.close()
     return render_template('mascotas.html', mascotas=mascotas)
 
@@ -65,29 +85,79 @@ def adoptantes_view():
 
 @app.route('/refugios')
 def refugios_view():
-    return render_template('refugios.html', refugios=refugios)
+    return render_template('refugios.html', refugios=refugios_lista)
 
 @app.route('/solicitudes')
 def solicitudes_view():
     return render_template('solicitudes.html', solicitudes=solicitudes)
 
 # ---------------------------------------------------------
-# Rutas de formularios
+# CRUD de Mascotas con MySQL
 # ---------------------------------------------------------
 @app.route('/mascotas/agregar', methods=['GET', 'POST'])
 def agregar_mascota():
     form = MascotaForm()
+    form.id_refugio.choices = obtener_refugios_choices()
+
     if form.validate_on_submit():
-        conn = conectar()
-        conn.execute(
-            'INSERT INTO mascotas (nombre, tipo, edad, estado) VALUES (?, ?, ?, ?)',
-            (form.nombre.data, form.tipo.data, form.edad.data, form.estado.data)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO mascotas (nombre, tipo, edad, estado, id_refugio) VALUES (%s, %s, %s, %s, %s)",
+            (form.nombre.data, form.tipo.data, form.edad.data, form.estado.data, form.id_refugio.data)
         )
         conn.commit()
+        cursor.close()
         conn.close()
         return redirect(url_for('mascotas_view'))
-    return render_template('formulario_mascota.html', form=form)
 
+    return render_template('formulario_mascota.html', form=form, titulo="Registrar Mascota")
+
+@app.route('/mascotas/editar/<int:id_mascota>', methods=['GET', 'POST'])
+def editar_mascota(id_mascota):
+    form = MascotaForm()
+    form.id_refugio.choices = obtener_refugios_choices()
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if form.validate_on_submit():
+        cursor.execute(
+            "UPDATE mascotas SET nombre = %s, tipo = %s, edad = %s, estado = %s, id_refugio = %s WHERE id_mascota = %s",
+            (form.nombre.data, form.tipo.data, form.edad.data, form.estado.data, form.id_refugio.data, id_mascota)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('mascotas_view'))
+
+    cursor.execute("SELECT * FROM mascotas WHERE id_mascota = %s", (id_mascota,))
+    mascota = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if mascota:
+        form.nombre.data = mascota['nombre']
+        form.tipo.data = mascota['tipo']
+        form.edad.data = mascota['edad']
+        form.estado.data = mascota['estado']
+        form.id_refugio.data = mascota['id_refugio']
+
+    return render_template('formulario_mascota.html', form=form, titulo="Editar Mascota")
+
+@app.route('/mascotas/eliminar/<int:id_mascota>')
+def eliminar_mascota(id_mascota):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM mascotas WHERE id_mascota = %s", (id_mascota,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('mascotas_view'))
+
+# ---------------------------------------------------------
+# Formularios de otros módulos (siguen con listas en memoria)
+# ---------------------------------------------------------
 @app.route('/adoptantes/agregar', methods=['GET', 'POST'])
 def agregar_adoptante():
     form = AdoptanteForm()
@@ -105,7 +175,7 @@ def agregar_adoptante():
 def agregar_refugio():
     form = RefugioForm()
     if form.validate_on_submit():
-        refugios.append({
+        refugios_lista.append({
             "nombre": form.nombre.data,
             "ciudad": form.ciudad.data,
             "contacto": form.contacto.data

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block titulo %}Registrar Mascota{% endblock %}
+{% block titulo %}{{ titulo }}{% endblock %}
 
 {% block content %}
     <section id="formulario-mascota">
-        <h2>Registrar Mascota</h2>
-        <p class="text-muted">Completa el formulario para agregar una nueva mascota al listado.</p>
+        <h2>{{ titulo }}</h2>
+        <p class="text-muted">Completa el formulario para guardar la información de la mascota.</p>
 
         <form method="POST" novalidate>
             {{ form.hidden_tag() }}
@@ -38,6 +38,14 @@
                 {{ form.estado.label(class="form-label") }}
                 {{ form.estado(class="form-select") }}
                 {% for error in form.estado.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.id_refugio.label(class="form-label") }}
+                {{ form.id_refugio(class="form-select") }}
+                {% for error in form.id_refugio.errors %}
                     <div class="text-danger small">{{ error }}</div>
                 {% endfor %}
             </div>

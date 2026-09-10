@@ -22,5 +22,10 @@ class MascotaForm(FlaskForm):
         choices=[('', '-- Selecciona --'), ('Disponible', 'Disponible'), ('Adoptado', 'Adoptado')],
         validators=[DataRequired(message="Selecciona el estado de la mascota.")]
     )
-    enviar = SubmitField('Registrar mascota')
+    id_refugio = SelectField(
+        'Refugio',
+        coerce=int,
+        validators=[DataRequired(message="Selecciona un refugio.")]
+    )
+    enviar = SubmitField('Guardar mascota')
     
