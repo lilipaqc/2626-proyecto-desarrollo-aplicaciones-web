@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block titulo %}Panel de administración{% endblock %}
+
+{% block content %}
+    <section id="dashboard-section">
+        <h2>Panel de administración</h2>
+        <p class="text-muted">Bienvenido, {{ current_user.usuario }}. Desde aquí puedes gestionar la plataforma.</p>
+
+        <a href="{{ url_for('mascotas_view') }}" class="btn btn-primary">Gestionar Mascotas</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Cerrar sesión</a>
+    </section>
+{% endblock %}

@@ -1,14 +1,40 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, flash
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from forms.mascota_form import MascotaForm
 from forms.adoptante_form import AdoptanteForm
 from forms.refugio_form import RefugioForm
 from forms.solicitud_form import SolicitudForm
+from forms.login_form import LoginForm
+from forms.usuario_form import UsuarioForm
 
 from conexion.conexion import get_db_connection
+from models import Usuario
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'  # necesaria para CSRF
+app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'  # necesaria para CSRF y sesiones
+
+# ---------------------------------------------------------
+# Configuración de Flask-Login
+# ---------------------------------------------------------
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = "Debes iniciar sesión para acceder a esta página."
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
+    data = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if data:
+        return Usuario(data[0], data[1], data[2])
+    return None
 
 # ---------------------------------------------------------
 # Datos de ejemplo (estáticos) para los módulos que aún no
@@ -34,7 +60,6 @@ solicitudes = [
 
 
 def obtener_refugios_choices():
-    """Consulta los refugios en MySQL para llenar el SelectField del formulario."""
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id_refugio, nombre FROM refugios")
@@ -49,7 +74,7 @@ def obtener_refugios_choices():
 # ---------------------------------------------------------
 @app.route('/')
 def index():
-    fecha_actualizacion = "13 de septiembre de 2026"
+    fecha_actualizacion = "20 de septiembre de 2026"
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -64,7 +89,84 @@ def index():
         total_mascotas=total_mascotas
     )
 
+@app.route('/adoptantes')
+def adoptantes_view():
+    return render_template('adoptantes.html', adoptantes=adoptantes)
+
+@app.route('/refugios')
+def refugios_view():
+    return render_template('refugios.html', refugios=refugios_lista)
+
+@app.route('/solicitudes')
+def solicitudes_view():
+    return render_template('solicitudes.html', solicitudes=solicitudes)
+
+# ---------------------------------------------------------
+# Autenticación: registro, login, logout
+# ---------------------------------------------------------
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    form = UsuarioForm()
+    if form.validate_on_submit():
+        password_hash = generate_password_hash(form.password.data)
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO usuarios (usuario, password) VALUES (%s, %s)",
+                (form.usuario.data, password_hash)
+            )
+            conn.commit()
+            flash("Usuario registrado correctamente. Ahora puedes iniciar sesión.", "success")
+            cursor.close()
+            conn.close()
+            return redirect(url_for('login'))
+        except Exception:
+            flash("Ese nombre de usuario ya existe. Elige otro.", "danger")
+            cursor.close()
+            conn.close()
+
+    return render_template('registro.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuarios WHERE usuario = %s", (form.usuario.data,))
+        data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if data and check_password_hash(data[2], form.password.data):
+            user = Usuario(data[0], data[1], data[2])
+            login_user(user)
+            flash(f"Bienvenido, {user.usuario}!", "success")
+            return redirect(url_for('dashboard'))
+        else:
+            flash("Usuario o contraseña incorrectos.", "danger")
+
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("Sesión cerrada correctamente.", "success")
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
+# ---------------------------------------------------------
+# CRUD de Mascotas con MySQL (protegido con login)
+# ---------------------------------------------------------
 @app.route('/mascotas')
+@login_required
 def mascotas_view():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -79,22 +181,8 @@ def mascotas_view():
     conn.close()
     return render_template('mascotas.html', mascotas=mascotas)
 
-@app.route('/adoptantes')
-def adoptantes_view():
-    return render_template('adoptantes.html', adoptantes=adoptantes)
-
-@app.route('/refugios')
-def refugios_view():
-    return render_template('refugios.html', refugios=refugios_lista)
-
-@app.route('/solicitudes')
-def solicitudes_view():
-    return render_template('solicitudes.html', solicitudes=solicitudes)
-
-# ---------------------------------------------------------
-# CRUD de Mascotas con MySQL
-# ---------------------------------------------------------
 @app.route('/mascotas/agregar', methods=['GET', 'POST'])
+@login_required
 def agregar_mascota():
     form = MascotaForm()
     form.id_refugio.choices = obtener_refugios_choices()
@@ -114,6 +202,7 @@ def agregar_mascota():
     return render_template('formulario_mascota.html', form=form, titulo="Registrar Mascota")
 
 @app.route('/mascotas/editar/<int:id_mascota>', methods=['GET', 'POST'])
+@login_required
 def editar_mascota(id_mascota):
     form = MascotaForm()
     form.id_refugio.choices = obtener_refugios_choices()
@@ -146,6 +235,7 @@ def editar_mascota(id_mascota):
     return render_template('formulario_mascota.html', form=form, titulo="Editar Mascota")
 
 @app.route('/mascotas/eliminar/<int:id_mascota>')
+@login_required
 def eliminar_mascota(id_mascota):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -198,5 +288,4 @@ def agregar_solicitud():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    
     

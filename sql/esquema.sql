@@ -19,3 +19,10 @@ CREATE TABLE IF NOT EXISTS mascotas (
     id_refugio INT,
     FOREIGN KEY (id_refugio) REFERENCES refugios(id_refugio)
 );
+
+-- Tabla de usuarios para el sistema de login
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
