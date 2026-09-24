@@ -3,27 +3,28 @@
 {% block titulo %}Solicitudes{% endblock %}
 
 {% block content %}
-
     <section id="modulo-solicitudes">
         <h2>Panel de Solicitudes</h2>
-        <p class="text-muted">Estado de las solicitudes de adopción procesadas por el equipo de AdoptaYA!.</p>
+        <p class="text-muted">Solicitudes de adopción, relacionando adoptantes y mascotas.</p>
+
         <a href="{{ url_for('agregar_solicitud') }}" class="btn btn-primary mb-3">+ Agregar Solicitud</a>
 
         <div class="table-responsive mt-3">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        <th>Solicitante</th>
+                        <th>Adoptante</th>
                         <th>Mascota</th>
                         <th>Fecha</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for solicitud in solicitudes %}
                         <tr>
-                            <td>{{ solicitud.solicitante }}</td>
-                            <td>{{ solicitud.mascota }}</td>
+                            <td>{{ solicitud.adoptante_nombre }}</td>
+                            <td>{{ solicitud.mascota_nombre }}</td>
                             <td>{{ solicitud.fecha }}</td>
                             <td>
                                 {% if solicitud.estado == "Aprobada" %}
@@ -34,11 +35,15 @@
                                     <span class="badge bg-secondary">{{ solicitud.estado }}</span>
                                 {% endif %}
                             </td>
+                            <td>
+                                <a href="{{ url_for('eliminar_solicitud', id_solicitud=solicitud.id_solicitud) }}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('¿Eliminar esta solicitud?')">Eliminar</a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </section>
-
 {% endblock %}

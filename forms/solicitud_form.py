@@ -1,16 +1,18 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField
+from wtforms import SelectField, StringField, SubmitField
 from wtforms.validators import DataRequired
 
 
 class SolicitudForm(FlaskForm):
-    solicitante = StringField(
-        'Nombre del solicitante',
-        validators=[DataRequired(message="El nombre del solicitante es obligatorio.")]
+    id_adoptante = SelectField(
+        'Adoptante',
+        coerce=int,
+        validators=[DataRequired(message="Selecciona un adoptante.")]
     )
-    mascota = StringField(
-        'Mascota solicitada',
-        validators=[DataRequired(message="Indica la mascota solicitada.")]
+    id_mascota = SelectField(
+        'Mascota',
+        coerce=int,
+        validators=[DataRequired(message="Selecciona una mascota.")]
     )
     fecha = StringField(
         'Fecha (AAAA-MM-DD)',
@@ -21,5 +23,4 @@ class SolicitudForm(FlaskForm):
         choices=[('', '-- Selecciona --'), ('Pendiente', 'Pendiente'), ('En revisión', 'En revisión'), ('Aprobada', 'Aprobada')],
         validators=[DataRequired(message="Selecciona el estado de la solicitud.")]
     )
-    enviar = SubmitField('Registrar solicitud')
-    
+    enviar = SubmitField('Guardar solicitud')

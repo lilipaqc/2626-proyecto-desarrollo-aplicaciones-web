@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import psycopg2.extras
 
 from forms.mascota_form import MascotaForm
 from forms.adoptante_form import AdoptanteForm
@@ -13,7 +14,7 @@ from conexion.conexion import get_db_connection
 from models import Usuario
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'  # necesaria para CSRF y sesiones
+app.config['SECRET_KEY'] = 'clave-secreta-adoptaya-2026'
 
 # ---------------------------------------------------------
 # Configuración de Flask-Login
@@ -36,33 +37,31 @@ def load_user(user_id):
         return Usuario(data[0], data[1], data[2])
     return None
 
-# ---------------------------------------------------------
-# Datos de ejemplo (estáticos) para los módulos que aún no
-# tienen persistencia en base de datos relacional
-# ---------------------------------------------------------
-adoptantes = [
-    {"nombre": "María López", "cedula": "1712345678", "telefono": "0991234567", "mascota_interes": "Rocky"},
-    {"nombre": "Carlos Pérez", "cedula": "1798765432", "telefono": "0987654321", "mascota_interes": "Luna"},
-    {"nombre": "Andrea Torres", "cedula": "1755566677", "telefono": "0965544332", "mascota_interes": "Michi"},
-]
-
-refugios_lista = [
-    {"nombre": "Refugio Huellitas", "ciudad": "Quito", "contacto": "huellitas@correo.com"},
-    {"nombre": "Patitas Felices", "ciudad": "Ambato", "contacto": "patitasfelices@correo.com"},
-    {"nombre": "Segunda Oportunidad", "ciudad": "Quito", "contacto": "segundaoportunidad@correo.com"},
-]
-
-solicitudes = [
-    {"solicitante": "María López", "mascota": "Rocky", "fecha": "2026-08-10", "estado": "En revisión"},
-    {"solicitante": "Carlos Pérez", "mascota": "Luna", "fecha": "2026-08-12", "estado": "Aprobada"},
-    {"solicitante": "Andrea Torres", "mascota": "Michi", "fecha": "2026-08-14", "estado": "Pendiente"},
-]
-
 
 def obtener_refugios_choices():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id_refugio, nombre FROM refugios")
+    resultado = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return [(r[0], r[1]) for r in resultado]
+
+
+def obtener_adoptantes_choices():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_adoptante, nombre FROM adoptantes")
+    resultado = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return [(r[0], r[1]) for r in resultado]
+
+
+def obtener_mascotas_choices():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_mascota, nombre FROM mascotas")
     resultado = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -89,27 +88,24 @@ def index():
         total_mascotas=total_mascotas
     )
 
-@app.route('/adoptantes')
-def adoptantes_view():
-    return render_template('adoptantes.html', adoptantes=adoptantes)
-
 @app.route('/refugios')
 def refugios_view():
-    return render_template('refugios.html', refugios=refugios_lista)
-
-@app.route('/solicitudes')
-def solicitudes_view():
-    return render_template('solicitudes.html', solicitudes=solicitudes)
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM refugios")
+    refugios = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('refugios.html', refugios=refugios)
 
 # ---------------------------------------------------------
-# Autenticación: registro, login, logout
+# Autenticación
 # ---------------------------------------------------------
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     form = UsuarioForm()
     if form.validate_on_submit():
         password_hash = generate_password_hash(form.password.data)
-
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
@@ -123,6 +119,7 @@ def registro():
             conn.close()
             return redirect(url_for('login'))
         except Exception:
+            conn.rollback()
             flash("Ese nombre de usuario ya existe. Elige otro.", "danger")
             cursor.close()
             conn.close()
@@ -163,13 +160,13 @@ def dashboard():
     return render_template('dashboard.html')
 
 # ---------------------------------------------------------
-# CRUD de Mascotas con MySQL (protegido con login)
+# CRUD de Mascotas (protegido)
 # ---------------------------------------------------------
 @app.route('/mascotas')
 @login_required
 def mascotas_view():
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute('''
         SELECT m.id_mascota, m.nombre, m.tipo, m.edad, m.estado,
                r.nombre AS refugio_nombre
@@ -208,7 +205,7 @@ def editar_mascota(id_mascota):
     form.id_refugio.choices = obtener_refugios_choices()
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     if form.validate_on_submit():
         cursor.execute(
@@ -246,45 +243,148 @@ def eliminar_mascota(id_mascota):
     return redirect(url_for('mascotas_view'))
 
 # ---------------------------------------------------------
-# Formularios de otros módulos (siguen con listas en memoria)
+# CRUD de Adoptantes (protegido)
 # ---------------------------------------------------------
+@app.route('/adoptantes')
+@login_required
+def adoptantes_view():
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM adoptantes")
+    adoptantes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('adoptantes.html', adoptantes=adoptantes)
+
 @app.route('/adoptantes/agregar', methods=['GET', 'POST'])
+@login_required
 def agregar_adoptante():
     form = AdoptanteForm()
     if form.validate_on_submit():
-        adoptantes.append({
-            "nombre": form.nombre.data,
-            "cedula": form.cedula.data,
-            "telefono": form.telefono.data,
-            "mascota_interes": form.mascota_interes.data
-        })
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO adoptantes (nombre, cedula, telefono) VALUES (%s, %s, %s)",
+            (form.nombre.data, form.cedula.data, form.telefono.data)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
         return redirect(url_for('adoptantes_view'))
-    return render_template('formulario_adoptante.html', form=form)
+    return render_template('formulario_adoptante.html', form=form, titulo="Registrar Adoptante")
 
+@app.route('/adoptantes/editar/<int:id_adoptante>', methods=['GET', 'POST'])
+@login_required
+def editar_adoptante(id_adoptante):
+    form = AdoptanteForm()
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    if form.validate_on_submit():
+        cursor.execute(
+            "UPDATE adoptantes SET nombre = %s, cedula = %s, telefono = %s WHERE id_adoptante = %s",
+            (form.nombre.data, form.cedula.data, form.telefono.data, id_adoptante)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('adoptantes_view'))
+
+    cursor.execute("SELECT * FROM adoptantes WHERE id_adoptante = %s", (id_adoptante,))
+    adoptante = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if adoptante:
+        form.nombre.data = adoptante['nombre']
+        form.cedula.data = adoptante['cedula']
+        form.telefono.data = adoptante['telefono']
+
+    return render_template('formulario_adoptante.html', form=form, titulo="Editar Adoptante")
+
+@app.route('/adoptantes/eliminar/<int:id_adoptante>')
+@login_required
+def eliminar_adoptante(id_adoptante):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM adoptantes WHERE id_adoptante = %s", (id_adoptante,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('adoptantes_view'))
+
+# ---------------------------------------------------------
+# CRUD de Solicitudes (protegido, con JOIN)
+# ---------------------------------------------------------
+@app.route('/solicitudes')
+@login_required
+def solicitudes_view():
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute('''
+        SELECT s.id_solicitud, s.fecha, s.estado,
+               a.nombre AS adoptante_nombre,
+               m.nombre AS mascota_nombre
+        FROM solicitudes s
+        JOIN adoptantes a ON s.id_adoptante = a.id_adoptante
+        JOIN mascotas m ON s.id_mascota = m.id_mascota
+    ''')
+    solicitudes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('solicitudes.html', solicitudes=solicitudes)
+
+@app.route('/solicitudes/agregar', methods=['GET', 'POST'])
+@login_required
+def agregar_solicitud():
+    form = SolicitudForm()
+    form.id_adoptante.choices = obtener_adoptantes_choices()
+    form.id_mascota.choices = obtener_mascotas_choices()
+
+    if form.validate_on_submit():
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO solicitudes (id_adoptante, id_mascota, fecha, estado) VALUES (%s, %s, %s, %s)",
+            (form.id_adoptante.data, form.id_mascota.data, form.fecha.data, form.estado.data)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('solicitudes_view'))
+
+    return render_template('formulario_solicitud.html', form=form, titulo="Registrar Solicitud")
+
+@app.route('/solicitudes/eliminar/<int:id_solicitud>')
+@login_required
+def eliminar_solicitud(id_solicitud):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM solicitudes WHERE id_solicitud = %s", (id_solicitud,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('solicitudes_view'))
+
+# ---------------------------------------------------------
+# Formulario de refugios (se mantiene simple, sin persistencia aun)
+# ---------------------------------------------------------
 @app.route('/refugios/agregar', methods=['GET', 'POST'])
+@login_required
 def agregar_refugio():
     form = RefugioForm()
     if form.validate_on_submit():
-        refugios_lista.append({
-            "nombre": form.nombre.data,
-            "ciudad": form.ciudad.data,
-            "contacto": form.contacto.data
-        })
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO refugios (nombre, ciudad, contacto) VALUES (%s, %s, %s)",
+            (form.nombre.data, form.ciudad.data, form.contacto.data)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
         return redirect(url_for('refugios_view'))
     return render_template('formulario_refugio.html', form=form)
-
-@app.route('/solicitudes/agregar', methods=['GET', 'POST'])
-def agregar_solicitud():
-    form = SolicitudForm()
-    if form.validate_on_submit():
-        solicitudes.append({
-            "solicitante": form.solicitante.data,
-            "mascota": form.mascota.data,
-            "fecha": form.fecha.data,
-            "estado": form.estado.data
-        })
-        return redirect(url_for('solicitudes_view'))
-    return render_template('formulario_solicitud.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
