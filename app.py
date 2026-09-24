@@ -348,6 +348,15 @@ def agregar_solicitud():
             "INSERT INTO solicitudes (id_adoptante, id_mascota, fecha, estado) VALUES (%s, %s, %s, %s)",
             (form.id_adoptante.data, form.id_mascota.data, form.fecha.data, form.estado.data)
         )
+
+        # Si la solicitud se registra como Aprobada, actualiza automáticamente
+        # el estado de la mascota relacionada a "Adoptado"
+        if form.estado.data == "Aprobada":
+            cursor.execute(
+                "UPDATE mascotas SET estado = 'Adoptado' WHERE id_mascota = %s",
+                (form.id_mascota.data,)
+            )
+
         conn.commit()
         cursor.close()
         conn.close()
